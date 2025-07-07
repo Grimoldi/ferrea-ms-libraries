@@ -1,11 +1,16 @@
-from typing import Optional
+from pydantic import BaseModel, EmailStr, Field
+from pydantic_extra_types.phone_numbers import PhoneNumber
 
-from pydantic.dataclasses import dataclass
 
+class Library(BaseModel):
+    """Library object representation."""
 
-@dataclass
-class CreateLibrary:
     name: str
     address: str
-    phone: Optional[str]
-    email: Optional[str]
+    _id: str | None = Field(
+        alias="id",
+        serialization_alias="id",
+        default=None,
+    )
+    phone: PhoneNumber | None = None
+    email: EmailStr | None = None
