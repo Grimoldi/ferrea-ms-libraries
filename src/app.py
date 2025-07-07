@@ -1,12 +1,12 @@
 from pathlib import Path
 
 import uvicorn
-from configs import settings
 from fastapi import FastAPI
 from ferrea.core.oas import add_openapi_schema
 from ferrea.observability.logs import setup_logger
 
-from routers import datasources, probes
+from configs import settings
+from routers import libraries, probes
 
 
 def app() -> FastAPI:
@@ -15,7 +15,7 @@ def app() -> FastAPI:
     if settings.ferrea_app.oas_path is not None:
         app = add_openapi_schema(app, Path(settings.ferrea_app.oas_path))
 
-    app.include_router(datasources.router)
+    app.include_router(libraries.router)
     app.include_router(probes.router)
 
     return app
