@@ -129,4 +129,6 @@ dmypy.json
 .pyre/
 
 
-k8s/2-real-secret.yaml
+############ Custom
+# Ignore dynaconf secret files
+.secrets.*
