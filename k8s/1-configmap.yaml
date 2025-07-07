@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ferrea-app
-  namespace: ferrea-libraries
-data:
-  FERREA_APP: libraries
