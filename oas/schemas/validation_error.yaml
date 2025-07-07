@@ -1,0 +1,28 @@
+ValidationError:
+  type: object
+  properties:
+    detail:
+      type: array
+      items:
+        type: object
+        properties:
+          type:
+            type: string
+          loc:
+            type: array
+            items:
+              type: string
+          msg:
+            type: string
+          input:
+            type: string
+            nullable: true
+        required:
+        - type
+        - loc
+        - msg
+        - input
+  required:
+    - detail
+  additionalProperties: false
+

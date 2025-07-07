@@ -1,0 +1,26 @@
+Probe:
+  type: object
+  required:
+  - status
+  - entities
+  properties:
+    status:
+      type: string
+      enum:
+      - healthy
+      - unhealthy
+    entities:
+      type: array
+      items:
+        type: object
+        properties:
+          name: 
+            type: string
+          status: 
+            type: string
+            enum:
+            - healthy
+            - unhealthy
+        required:
+        - name
+        - status

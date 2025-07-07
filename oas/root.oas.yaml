@@ -1,0 +1,52 @@
+openapi: 3.0.0
+
+
+info:
+  title: %REPLACE% API
+
+  description: |
+    # Ferrea %REPLACE%
+    <Description>
+
+  version: %REPLACE%
+
+  contact:
+    "name": "Eugenio Grimoldi"
+    "url": "https://github.com/Grimoldi/%REPLACE%"
+
+  license:
+    name: MIT licence
+    url: https://mit-license.org/
+
+
+servers:
+  - url: https://ferrea.local
+    description: Development local server
+
+  - url: http://localhost:8080
+    description: Client tests
+
+
+paths:
+  /_/health:
+    $ref: "paths/probes.yaml#/Liveness"
+
+  /_/ready:
+    $ref: "paths/probes.yaml#/Readiness"
+
+
+components:
+  schemas:
+    ValidationError:
+      $ref: "schemas/validation_error.yaml#/ValidationError"
+
+    Probe:
+      $ref: "schemas/probe.yaml#/Probe"
+
+
+tags: 
+  - name: %REPLACE%
+    description: %REPLACE%.
+
+  - name: probes
+    description: internal probes.
