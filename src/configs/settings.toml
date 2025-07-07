@@ -1,0 +1,14 @@
+dynaconf_merge = true
+
+[ferrea_app]
+name = "DTS"
+debug = true
+
+[google]
+api_url = "https://www.googleapis.com/books/v1"
+name = "GoogleBooks"
+
+[openlibrary]
+api_url = "https://openlibrary.org"
+cover_url = "https://covers.openlibrary.org"
+name = "OpenLibrary"
