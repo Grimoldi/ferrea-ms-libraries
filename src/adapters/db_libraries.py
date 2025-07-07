@@ -2,14 +2,14 @@ from typing import ContextManager
 
 import geopy
 from attr import define
-from ferrea.db_engine import DBInterface
-from ferrea.models import Library
-from models.library import CreateLibrary
+from ferrea.clients.db import DBClient
+
+from models.library import Library
 
 
 @define
 class LibrariesOperation:
-    db: ContextManager[DBInterface]
+    db: ContextManager[DBClient]
 
     def find_all_libraries(self) -> list[Library]:
         """
@@ -51,7 +51,7 @@ class LibrariesOperation:
         temp = dict(library_raw[0][0].items())
         return Library(**temp)
 
-    def create_library(self, data: CreateLibrary) -> Library:
+    def create_library(self, data: Library) -> Library:
         """
         This method creates a library on the db.
 
