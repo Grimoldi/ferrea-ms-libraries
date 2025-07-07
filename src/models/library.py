@@ -14,3 +14,5 @@ class Library(BaseModel):
     )
     phone: PhoneNumber | None = None
     email: EmailStr | None = None
+    latitude: float | None = None
+    longitude: float | None = None
