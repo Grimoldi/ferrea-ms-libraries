@@ -1,24 +1,8 @@
 from pathlib import Path
 
-from dynaconf.typed import Annotated, DictValue, Dynaconf, Options
-from dynaconf.typed.validators import Validator
+from dynaconf.typed import DictValue, Dynaconf, Options
 
 config_dir = Path(__file__).parent
-
-
-class Openlibrary(DictValue):
-    """Settings for the Openlibrary datasource."""
-
-    api_url: Annotated[str, Validator(startswith="https://")]
-    cover_url: Annotated[str, Validator(startswith="https://")]
-    name: str
-
-
-class Google(DictValue):
-    """Settings for the Google Books datasource."""
-
-    api_url: Annotated[str, Validator(startswith="https://")]
-    name: str
 
 
 class FerreaApp(DictValue):
@@ -29,12 +13,20 @@ class FerreaApp(DictValue):
     oas_path: str | None = None
 
 
+class Database(DictValue):
+    """Settings for the Database layer."""
+
+    uri: str
+    username: str
+    password: str
+    database: str | None = None
+
+
 class FerreaSettings(Dynaconf):
     """Overall settings for the webserver."""
 
     ferrea_app: FerreaApp = FerreaApp()  # type: ignore
-    google: Google = Google()  # type: ignore
-    openlibrary: Openlibrary = Openlibrary()  # type: ignore
+    database: Database = Database()  # type: ignore
 
     dynaconf_options = Options(
         envvar_prefix="FERREA",
