@@ -1,15 +1,22 @@
+from dataclasses import dataclass
 from typing import ContextManager
 
 import geopy
-from attr import define
 from ferrea.clients.db import DBClient
 
+from models.exceptions import FerreaLibraryNotCreated
 from models.library import Library
 
 
-@define
-class LibrariesOperation:
-    db: ContextManager[DBClient]
+@dataclass
+class LibrariesRepository:
+    """Repository class for interacting with the DB for the Libraries entities.
+
+    Returns:
+        _type_: the repository class.
+    """
+
+    db_client: ContextManager[DBClient]
 
     def find_all_libraries(self) -> list[Library]:
         """
@@ -19,17 +26,18 @@ class LibrariesOperation:
             list[Library]: the list of all Libraries.
         """
         query = "MATCH (l:Library) return l"
-        with self.db as session:
-            libraries_raw = session.read(query=query)
-        libraries = list()
 
+        with self.db_client as session:
+            libraries_raw = session.read(query=query)
+
+        libraries = list()
         for library in libraries_raw:
             temp = dict(library[0].items())
             libraries.append(Library(**temp))
 
         return libraries
 
-    def find_library(self, name: str) -> Library | None:
+    def find_a_library(self, name: str) -> Library | None:
         """
         This method search for the desired library on the db.
 
@@ -40,10 +48,10 @@ class LibrariesOperation:
             Library | None: the library if found, else None.
         """
         query = "MATCH (l:Library) WHERE l.name = $library_name RETURN l"
-        params = {"library_name": name}
+        params: dict[str, str | int | float] = {"library_name": name}
 
-        with self.db as session:
-            library_raw = session.read(query, params)  # type: ignore
+        with self.db_client as session:
+            library_raw = session.read(query, params)
 
         if len(library_raw) == 0:
             return
@@ -56,7 +64,7 @@ class LibrariesOperation:
         This method creates a library on the db.
 
         Args:
-            data (CreateLibrary): the data of the library to create.
+            data (Library): the data of the library to create.
 
         Returns:
             Library: the created library.
@@ -73,17 +81,25 @@ class LibrariesOperation:
             "phone": data.phone,
             "address": data.address,
             "email": data.email,
-            "latitude": location.latitude,
-            "longitude": location.longitude,
         }
-        with self.db as session:
+        if location is not None:
+            params["latitude"] = location.latitude
+            params["longitude"] = location.longitude
+
+        with self.db_client as session:
             session.write(query, params)
 
-        return Library(data.name, data.address, location, data.email, data.phone)  # type: ignore
+        created_library = self.find_a_library(data.name)
+        if created_library is None:
+            raise FerreaLibraryNotCreated(
+                f"Unable to find {data.name} library after its creation."
+            )
+
+        return created_library
 
     def _find_location(
         self, address: str, geolocator: geopy.Nominatim
-    ) -> geopy.Location:
+    ) -> geopy.Location | None:
         location = geolocator.geocode(address)
 
         return location  # type: ignore
