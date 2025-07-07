@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, status
 from fastapi_utils.cbv import cbv
-from ferrea.clients.db import DBClient, Neo4jClient
+from ferrea.clients.db import ConnectionSettings, DBClient, Neo4jClient
 from starlette.responses import JSONResponse
 
 from adapters.libraries import LibrariesRepository
+from configs.config import settings
 from models.library import Library
 from operations.libraries import (
     get_a_library_by_name,
@@ -22,7 +23,22 @@ def get_db() -> DBClient:
     Returns:
         type[DBClient]: an instance that matches the DBClient protocol.
     """
-    return Neo4jClient()  # type: ignore
+    db_conf = settings.database
+    if db_conf.database is None:
+        connection_settings = ConnectionSettings(
+            db_conf.uri,
+            db_conf.username,
+            db_conf.password,
+        )
+    else:
+        connection_settings = ConnectionSettings(
+            db_conf.uri,
+            db_conf.username,
+            db_conf.password,
+            db_conf.database,
+        )
+
+    return Neo4jClient(connection_settings=connection_settings)
 
 
 @cbv(router)
