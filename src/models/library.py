@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr
 from pydantic_extra_types.phone_numbers import PhoneNumber
 
 
@@ -7,11 +7,7 @@ class Library(BaseModel):
 
     name: str
     address: str
-    _id: str | None = Field(
-        alias="id",
-        serialization_alias="id",
-        default=None,
-    )
+    fid: str | None = None
     phone: PhoneNumber | None = None
     email: EmailStr | None = None
     latitude: float | None = None
