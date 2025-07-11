@@ -1,0 +1,21 @@
+Library:
+  type: object
+  properties:
+    name:
+      type: string
+    address:
+      type: string
+    fid:
+      type: string
+      description: Ferrea internal id
+      readOnly: true 
+    phone:
+      type: string
+    email:
+      type: string
+    latitude:
+      type: number
+      format: float
+    longitude:
+      type: number
+      format: float

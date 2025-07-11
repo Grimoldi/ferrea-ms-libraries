@@ -1,12 +1,14 @@
 FerreaError:
   type: object
   properties:
-    detail:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
+    uuid:
+      type: string
+    code:
+      type: string
+    title:
+      type: string
+    message:
+      type: string
   required:
     - detail
   additionalProperties: false

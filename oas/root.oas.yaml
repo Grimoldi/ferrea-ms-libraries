@@ -2,17 +2,17 @@ openapi: 3.0.0
 
 
 info:
-  title: %REPLACE% API
+  title: Libraries API
 
   description: |
-    # Ferrea %REPLACE%
-    <Description>
+    # Ferrea Libraries
+    This microservice serves as the interface for Libraries handling.
 
-  version: %REPLACE%
+  version: "0.1.1"
 
   contact:
     "name": "Eugenio Grimoldi"
-    "url": "https://github.com/Grimoldi/%REPLACE%"
+    "url": "https://github.com/Grimoldi/ferrea-ms-libraries"
 
   license:
     name: MIT licence
@@ -28,6 +28,12 @@ servers:
 
 
 paths:
+  /api/v1/libraries:
+    $ref: "paths/libraries.yaml#/Libraries"
+  
+  /api/v1/libraries/{name}:
+    $ref: "paths/libraries.yaml#/Library"
+
   /_/health:
     $ref: "paths/probes.yaml#/Liveness"
 
@@ -37,16 +43,19 @@ paths:
 
 components:
   schemas:
-    ValidationError:
-      $ref: "schemas/validation_error.yaml#/ValidationError"
+    Library:
+      $ref: "schemas/library.yaml#/Library"
 
     Probe:
       $ref: "schemas/probe.yaml#/Probe"
 
+    ValidationError:
+      $ref: "schemas/validation_error.yaml#/ValidationError"
+
 
 tags: 
-  - name: %REPLACE%
-    description: %REPLACE%.
+  - name: libraries
+    description: library related operations.
 
   - name: probes
     description: internal probes.

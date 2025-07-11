@@ -1,0 +1,130 @@
+Libraries:
+  get:
+    summary: List all the registered libraries.
+    description: This endpoint returns the complete list of all libraries registered to the application.
+    security: []
+    tags:
+      - libraries
+    operationId: getLibraries
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              items:
+                type: integer
+                minimum: 0
+              result:
+                type: array
+                minItems: 0
+                items:
+                  $ref: "../root.oas.yaml#/components/schemas/Library"
+      
+            examples:
+              Two libraries:
+                summary: Two libraries in Monza (Italy).
+                value:
+                  items: 2
+                  result:
+                    - name: Triante Library
+                      address: Monte Amiata Street, 60, Monza, MB, Italy
+                      phone: +39 039 731269
+                      fid: 123456
+                      email: monza.triante@brianzabiblioteche.it
+                      latitude: 45.5832943
+                      longitude: 9.2550648
+                    - name: Monza Civica
+                      address: Padre Reginaldo Giuliani Street, 1, Monza, MB, Italy
+                      phone: +39 039 382272
+                      fid: 123456
+                      email: monza.civica@brianzabiblioteche.it
+                      latitude: 45.5838734
+                      longitude: 9.2724811
+              No Libraries:
+                summary: no libraries yet registered
+                value:
+                  items: 0
+                  result: []
+
+  post:
+    summary: Create a new library.
+    description: |
+      This endpoint allows for the creation of a new library.
+      Please note that if the library is already existing it will update the already existing one.
+    security: []
+    tags:
+      - libraries
+    operationId: createLibrary
+    requestBody:
+      content:
+        application/json:
+          schema:
+              $ref: "../root.oas.yaml#/components/schemas/Library"
+          example:
+            name: Triante Library
+            address: Monte Amiata Street, 60, Monza, MB, Italy
+            phone: +39 039 731269
+            email: monza.triante@brianzabiblioteche.it
+            latitude: 45.5832943
+            longitude: 9.2550648
+
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "../root.oas.yaml#/components/schemas/Library"
+            example:
+              name: Triante Library
+              address: Monte Amiata Street, 60, Monza, MB, Italy
+              phone: +39 039 731269
+              fid: 123456
+              email: monza.triante@brianzabiblioteche.it
+              latitude: 45.5832943
+              longitude: 9.2550648
+            
+      "422":
+        description: Unprocessable Entity
+        content:
+          application/json:
+            schema:
+              $ref: "../root.oas.yaml#/components/schemas/ValidationError"
+
+Library:
+  get:
+    summary: Search for a single library.
+    description: This endpoint search for the specified library.
+    security: []
+    tags:
+      - libraries
+    operationId: getLibrary
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "../root.oas.yaml#/components/schemas/Library"
+            example:
+              name: Triante Library
+              address: Monte Amiata Street, 60, Monza, MB, Italy
+              phone: +39 039 731269
+              fid: 123456
+              email: monza.triante@brianzabiblioteche.it
+              latitude: 45.5832943
+              longitude: 9.2550648
+
+      "404":
+        description: Not found
+        content:
+          application/problem+json:
+            schema:
+              $ref: "../root.oas.yaml#/components/schemas/FerreaError"
+            example:
+              uuid: 123abc456
+              code: "exception.libraries"
+              title: "Not found"
+              message: "Unable to find library"
+            
