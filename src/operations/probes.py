@@ -1,30 +1,30 @@
-from models.api_service import ApiService
+from ferrea.clients.db import DBClient
+
 from models.probes import Entity, HealthProbe, HealthStatus
 
 
-def check_health(datasources: list[ApiService]) -> HealthProbe:
+def check_health(db_client: DBClient) -> HealthProbe:
     """From all the registered datasources, try to fetch the data.
 
     Args:
-        datasources (list[ApiService]): the list of all datasources configured.
+        db_client (DBClient): the db client.
 
     Returns:
         HealthProbe: the health probe instance.
     """
     entities: list[Entity] = list()
 
-    for datasource in datasources:
-        entities.append(
-            Entity(
-                name=datasource.name,
-                status=(
-                    HealthStatus.HEALTHY
-                    if datasource.healthy
-                    else HealthStatus.UNHEALTHY
-                ),
-                internal_status=datasource.healthy,
-            )
+    entities.append(
+        Entity(
+            name="database",
+            status=(
+                HealthStatus.HEALTHY
+                if db_client.verify_connectivity()
+                else HealthStatus.UNHEALTHY
+            ),
+            internal_status=db_client.verify_connectivity(),
         )
+    )
 
     if all([x.internal_status for x in entities]):
         status = HealthStatus.HEALTHY

@@ -2,14 +2,14 @@ import json
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from ferrea.clients.db import DBClient
 from starlette import status
 from starlette.responses import JSONResponse
 
-from models.api_service import ApiService
 from models.probes import HealthStatus
 from operations.probes import check_health, check_readiness
 
-from ._builders import _google_factory, _openlibrary_factory
+from ._builder import build_db_connection
 
 router = APIRouter()
 
@@ -44,8 +44,7 @@ async def readiness() -> JSONResponse:
 
 @router.get("/_/health", response_model=None)
 async def liveness(
-    google_books_repository: Annotated[ApiService, Depends(_google_factory)],
-    openlibrary_repository: Annotated[ApiService, Depends(_openlibrary_factory)],
+    db_client: Annotated[DBClient, Depends(build_db_connection)],
 ) -> JSONResponse:
     """This function serves as readiness probe.
 
@@ -56,7 +55,7 @@ async def liveness(
         "content-type": "application/json",
     }
 
-    health = check_health([google_books_repository, openlibrary_repository])
+    health = check_health(db_client)
 
     if health.status == HealthStatus.HEALTHY:
         return JSONResponse(
