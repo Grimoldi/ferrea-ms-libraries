@@ -1,4 +1,5 @@
 from ferrea.clients.db import DBClient
+from ferrea.observability.logs import ferrea_logger
 
 from models.probes import Entity, HealthProbe, HealthStatus
 
@@ -14,22 +15,24 @@ def check_health(db_client: DBClient) -> HealthProbe:
     """
     entities: list[Entity] = list()
 
+    try:
+        db_healthy = db_client.verify_connectivity()
+    except Exception as e:
+        ferrea_logger.error(f"Unable to connect to db due to {e}.")
+        db_healthy = False
+
     entities.append(
         Entity(
             name="database",
-            status=(
-                HealthStatus.HEALTHY
-                if db_client.verify_connectivity()
-                else HealthStatus.UNHEALTHY
-            ),
-            internal_status=db_client.verify_connectivity(),
+            status=(HealthStatus.HEALTHY if db_healthy else HealthStatus.UNHEALTHY),
+            internal_status=db_healthy,
         )
     )
 
     if all([x.internal_status for x in entities]):
         status = HealthStatus.HEALTHY
     else:
-        status = HealthStatus.HEALTHY
+        status = HealthStatus.UNHEALTHY
 
     return HealthProbe(status=status, entities=entities)
 
