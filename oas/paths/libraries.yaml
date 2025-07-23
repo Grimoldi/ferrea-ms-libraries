@@ -12,14 +12,16 @@ Libraries:
         content:
           application/json:
             schema:
-              items:
-                type: integer
-                minimum: 0
-              result:
-                type: array
-                minItems: 0
+              type: object
+              properties:
                 items:
-                  $ref: "../root.oas.yaml#/components/schemas/Library"
+                  type: integer
+                  minimum: 0
+                result:
+                  type: array
+                  minItems: 0
+                  items:
+                    $ref: "../root.oas.yaml#/components/schemas/Library"
       
             examples:
               Two libraries:

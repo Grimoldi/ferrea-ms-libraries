@@ -1,0 +1,384 @@
+openapi: 3.0.0
+info:
+  title: Libraries API
+  description: |
+    # Ferrea Libraries
+    This microservice serves as the interface for Libraries handling.
+  version: 0.1.1
+  contact:
+    name: Eugenio Grimoldi
+    url: https://github.com/Grimoldi/ferrea-ms-libraries
+  license:
+    name: MIT licence
+    url: https://mit-license.org/
+servers:
+  - url: https://ferrea.local
+    description: Development local server
+  - url: http://localhost:8080
+    description: Client tests
+tags:
+  - name: libraries
+    description: library related operations.
+  - name: probes
+    description: internal probes.
+paths:
+  /api/v1/libraries:
+    get:
+      summary: List all the registered libraries.
+      description: This endpoint returns the complete list of all libraries registered to the application.
+      security: []
+      tags:
+        - libraries
+      operationId: getLibraries
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: integer
+                    minimum: 0
+                  result:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: '#/components/schemas/Library'
+              examples:
+                Two libraries:
+                  summary: Two libraries in Monza (Italy).
+                  value:
+                    items: 2
+                    result:
+                      - name: Triante Library
+                        address: Monte Amiata Street, 60, Monza, MB, Italy
+                        phone: +39 039 731269
+                        fid: 123456
+                        email: monza.triante@brianzabiblioteche.it
+                        latitude: 45.5832943
+                        longitude: 9.2550648
+                      - name: Monza Civica
+                        address: Padre Reginaldo Giuliani Street, 1, Monza, MB, Italy
+                        phone: +39 039 382272
+                        fid: 123456
+                        email: monza.civica@brianzabiblioteche.it
+                        latitude: 45.5838734
+                        longitude: 9.2724811
+                No Libraries:
+                  summary: no libraries yet registered
+                  value:
+                    items: 0
+                    result: []
+    post:
+      summary: Create a new library.
+      description: |
+        This endpoint allows for the creation of a new library.
+        Please note that if the library is already existing it will update the already existing one.
+      security: []
+      tags:
+        - libraries
+      operationId: createLibrary
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Library'
+            example:
+              name: Triante Library
+              address: Monte Amiata Street, 60, Monza, MB, Italy
+              phone: +39 039 731269
+              email: monza.triante@brianzabiblioteche.it
+              latitude: 45.5832943
+              longitude: 9.2550648
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Library'
+              example:
+                name: Triante Library
+                address: Monte Amiata Street, 60, Monza, MB, Italy
+                phone: +39 039 731269
+                fid: 123456
+                email: monza.triante@brianzabiblioteche.it
+                latitude: 45.5832943
+                longitude: 9.2550648
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+  /api/v1/libraries/{id}:
+    put:
+      summary: Modify a library.
+      description: |
+        This endpoint allows for the updates of a new library.
+        The library should be passed in its entirety, as this will replace the existing one.
+      security: []
+      tags:
+        - libraries
+      operationId: updateLibrary
+      parameters:
+        - schema:
+            type: string
+          name: id
+          in: path
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Library'
+            example:
+              name: Triante Library
+              address: Monte Amiata Street, 60, Monza, MB, Italy
+              phone: '+39039731269'
+              email: monza.triante@brianzabiblioteche.it
+              latitude: 45.5832943
+              longitude: 9.2550648
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Library'
+              example:
+                name: Triante Library
+                address: Monte Amiata Street, 60, Monza, MB, Italy
+                phone: '+39039731269'
+                fid: 123456
+                email: monza.triante@brianzabiblioteche.it
+                latitude: 45.5832943
+                longitude: 9.2550648
+        '404':
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/FerreaError'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    delete:
+      summary: Remove a library.
+      description: |
+        This endpoint allows for the deletion of a library.
+      security: []
+      tags:
+        - libraries
+      operationId: deleteLibrary
+      parameters:
+        - schema:
+            type: string
+          name: id
+          in: path
+          required: true
+      responses:
+        '204':
+          description: No content
+        '404':
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/FerreaError'
+  /api/v1/libraries/{name}:
+    get:
+      summary: Search for a single library.
+      description: This endpoint search for the specified library.
+      security: []
+      tags:
+        - libraries
+      operationId: getLibrary
+      parameters:
+        - schema:
+            type: string
+          name: name
+          in: path
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Library'
+              example:
+                name: Triante Library
+                address: Monte Amiata Street, 60, Monza, MB, Italy
+                phone: +39 039 731269
+                fid: 123456
+                email: monza.triante@brianzabiblioteche.it
+                latitude: 45.5832943
+                longitude: 9.2550648
+        '404':
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/FerreaError'
+              example:
+                uuid: 123abc456
+                code: exception.libraries
+                title: Not found
+                message: Unable to find library
+  /_/health:
+    get:
+      description: Verify the webserver's dependencies health.
+      security: []
+      summary: Returns if the webserver is able to engage on its dependencies or not.
+      tags:
+        - probes
+      operationId: getLivenessProbe
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Probe'
+              example:
+                status: healthy
+                entities:
+                  - name: GoogleBooks
+                    status: healthy
+                  - name: OpenLibrary
+                    status: healthy
+        '503':
+          description: Service unavailable. At least one of its dependencies is unhealthy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Probe'
+              example:
+                status: unhealthy
+                entities:
+                  - name: GoogleBooks
+                    status: unhealthy
+                  - name: OpenLibrary
+                    status: healthy
+  /_/ready:
+    get:
+      description: Verify the webserver health.
+      security: []
+      summary: Returns if the webserver is healthy or not.
+      tags:
+        - probes
+      operationId: getHealthProbe
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Probe'
+              example:
+                status: healthy
+                entities:
+                  - name: webserver
+                    status: healthy
+        '503':
+          description: Service unavailable. The webserver is not started yet.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Probe'
+components:
+  schemas:
+    Library:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        fid:
+          type: string
+          description: Ferrea internal id
+          readOnly: true
+        phone:
+          type: string
+        email:
+          type: string
+        latitude:
+          type: number
+          format: float
+        longitude:
+          type: number
+          format: float
+    Probe:
+      type: object
+      required:
+        - status
+        - entities
+      properties:
+        status:
+          type: string
+          enum:
+            - healthy
+            - unhealthy
+        entities:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              status:
+                type: string
+                enum:
+                  - healthy
+                  - unhealthy
+            required:
+              - name
+              - status
+    FerreaError:
+      type: object
+      properties:
+        uuid:
+          type: string
+        code:
+          type: string
+        title:
+          type: string
+        message:
+          type: string
+      required:
+        - detail
+      additionalProperties: false
+    ValidationError:
+      type: object
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              loc:
+                type: array
+                items:
+                  type: string
+              msg:
+                type: string
+              input:
+                type: string
+                nullable: true
+            required:
+              - type
+              - loc
+              - msg
+              - input
+      required:
+        - detail
+      additionalProperties: false
