@@ -1,9 +1,12 @@
+import json
+
 from fastapi import APIRouter, Depends, status
 from fastapi_utils.cbv import cbv
 from ferrea.clients.db import DBClient
 from ferrea.core.context import Context
 from ferrea.core.exceptions import FerreaBaseException
 from ferrea.models.error import FerreaError
+from ferrea.observability.logs import ferrea_logger
 from starlette.responses import JSONResponse
 
 from adapters.libraries import LibrariesRepository
@@ -16,7 +19,7 @@ from operations.libraries import (
 
 from ._builder import build_context, build_db_connection
 
-router = APIRouter()
+router = APIRouter(prefix="/api/v1")
 
 
 @cbv(router)
@@ -28,12 +31,18 @@ class LibraryViews:
     db_client: DBClient = Depends(build_db_connection)
     context: Context = Depends(build_context)
 
-    def __post_init__(self) -> None:
-        self._repository = LibrariesRepository(self.db_client)
+    @property
+    def _repository(self) -> LibrariesRepository:
+        return LibrariesRepository(self.db_client)
 
     @router.get("/libraries")
     def search_all_libraries(self) -> JSONResponse:
         """Endpoint for listing all libraries."""
+        ferrea_logger.info(
+            "Listing all libraries.",
+            **self.context.log,
+        )
+
         try:
             libraries = get_all_libraries(self._repository)
         except FerreaBaseException as e:
@@ -43,7 +52,10 @@ class LibraryViews:
 
         response = {
             "items": len(libraries),
-            "result": [library.model_dump_json(by_alias=True) for library in libraries],
+            "result": [
+                json.loads(library.model_dump_json(by_alias=True))
+                for library in libraries
+            ],
         }
 
         return JSONResponse(
@@ -54,6 +66,11 @@ class LibraryViews:
     @router.post("/libraries")
     def create_new_library(self, data: Library) -> JSONResponse:
         """Endpoint for the creation of a new library."""
+        ferrea_logger.info(
+            f"Creating a new library for {data.name}.",
+            **self.context.log,
+        )
+
         try:
             new_library = upsert_a_library(self._repository, data)
         except FerreaBaseException as e:
@@ -62,13 +79,18 @@ class LibraryViews:
             return self._generic_exception_5xx(e)
 
         return JSONResponse(
-            content=new_library.model_dump_json(by_alias=True),
+            content=json.loads(new_library.model_dump_json(by_alias=True)),
             status_code=status.HTTP_200_OK,
         )
 
     @router.get("/libraries/{name}")
     def search_library_by_id(self, name: str) -> JSONResponse:
         """Endpoint for search a specific library by name."""
+        ferrea_logger.info(
+            f"Searching {name} library.",
+            **self.context.log,
+        )
+
         try:
             library = get_a_library_by_name(self._repository, name=name)
         except FerreaBaseException as e:
@@ -84,7 +106,7 @@ class LibraryViews:
                 message=f"Unable to find library with name {name}.",
             )
             return JSONResponse(
-                content=error.model_dump_json(),
+                content=json.loads(error.model_dump_json()),
                 status_code=status.HTTP_404_NOT_FOUND,
                 headers={"content-type": "application/problem+json"},
             )
@@ -96,6 +118,11 @@ class LibraryViews:
 
     def _ferrea_exception_5xx(self, e: Exception) -> JSONResponse:
         """Helper method for a Ferrea based exception."""
+        ferrea_logger.exception(
+            f"Received an error specific for Ferrea: {e}.",
+            **self.context.log,
+        )
+
         error = FerreaError(
             uuid=self.context.uuid,
             code="ferrea.libraries.error",
@@ -103,13 +130,18 @@ class LibraryViews:
             message=f"{e}",
         )
         return JSONResponse(
-            content=error.model_dump_json(),
+            content=json.loads(error.model_dump_json()),
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             headers={"content-type": "application/problem+json"},
         )
 
     def _generic_exception_5xx(self, e: Exception) -> JSONResponse:
         """Helper method for a not Ferrea based exception."""
+        ferrea_logger.exception(
+            f"Received a generic error: {e}.",
+            **self.context.log,
+        )
+
         error = FerreaError(
             uuid=self.context.uuid,
             code="exception.unhandled",
@@ -117,7 +149,7 @@ class LibraryViews:
             message=f"{e}",
         )
         return JSONResponse(
-            content=error.model_dump_json(),
+            content=json.loads(error.model_dump_json()),
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             headers={"content-type": "application/problem+json"},
         )
