@@ -30,14 +30,14 @@ Libraries:
                   items: 2
                   result:
                     - name: Triante Library
-                      address: Monte Amiata Street, 60, Monza, MB, Italy
+                      address: Monte Amiata via, 60, Monza, MB, Italy
                       phone: +39 039 731269
                       fid: 123456
                       email: monza.triante@brianzabiblioteche.it
                       latitude: 45.5832943
                       longitude: 9.2550648
                     - name: Monza Civica
-                      address: Padre Reginaldo Giuliani Street, 1, Monza, MB, Italy
+                      address: Padre Reginaldo Giuliani via, 1, Monza, MB, Italy
                       phone: +39 039 382272
                       fid: 123456
                       email: monza.civica@brianzabiblioteche.it
@@ -65,7 +65,7 @@ Libraries:
               $ref: "../root.oas.yaml#/components/schemas/Library"
           example:
             name: Triante Library
-            address: Monte Amiata Street, 60, Monza, MB, Italy
+            address: Monte Amiata via, 60, Monza, MB, Italy
             phone: +39 039 731269
             email: monza.triante@brianzabiblioteche.it
             latitude: 45.5832943
@@ -80,7 +80,7 @@ Libraries:
               $ref: "../root.oas.yaml#/components/schemas/Library"
             example:
               name: Triante Library
-              address: Monte Amiata Street, 60, Monza, MB, Italy
+              address: Monte Amiata via, 60, Monza, MB, Italy
               phone: +39 039 731269
               fid: 123456
               email: monza.triante@brianzabiblioteche.it
@@ -117,7 +117,7 @@ Library:
               $ref: "../root.oas.yaml#/components/schemas/Library"
           example:
             name: Triante Library
-            address: Monte Amiata Street, 60, Monza, MB, Italy
+            address: Monte Amiata via, 60, Monza, MB, Italy
             phone: "+39039731269"
             email: monza.triante@brianzabiblioteche.it
             latitude: 45.5832943
@@ -132,7 +132,7 @@ Library:
               $ref: "../root.oas.yaml#/components/schemas/Library"
             example:
               name: Triante Library
-              address: Monte Amiata Street, 60, Monza, MB, Italy
+              address: Monte Amiata via, 60, Monza, MB, Italy
               phone: "+39039731269"
               fid: 123456
               email: monza.triante@brianzabiblioteche.it
@@ -203,7 +203,7 @@ LibraryName:
               $ref: "../root.oas.yaml#/components/schemas/Library"
             example:
               name: Triante Library
-              address: Monte Amiata Street, 60, Monza, MB, Italy
+              address: Monte Amiata via, 60, Monza, MB, Italy
               phone: +39 039 731269
               fid: 123456
               email: monza.triante@brianzabiblioteche.it
