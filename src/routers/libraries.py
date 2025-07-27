@@ -33,7 +33,7 @@ class LibraryViews:
 
     @property
     def _repository(self) -> LibrariesRepository:
-        return LibrariesRepository(self.db_client)
+        return LibrariesRepository(self.db_client, self.context)
 
     @router.get("/libraries")
     def search_all_libraries(self) -> JSONResponse:
@@ -112,7 +112,7 @@ class LibraryViews:
             )
 
         return JSONResponse(
-            content=library.model_dump_json(by_alias=True),
+            content=json.loads(library.model_dump_json(by_alias=True)),
             status_code=status.HTTP_200_OK,
         )
 

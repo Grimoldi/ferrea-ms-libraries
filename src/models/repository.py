@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import ContextManager, Protocol
 
 from ferrea.clients.db import DBClient
+from ferrea.core.context import Context
 
 from models.library import Library
 
@@ -13,6 +14,7 @@ class RepositoryService(Protocol):
     """
 
     db_client: ContextManager[DBClient]
+    context: Context
 
     def find_all_libraries(self) -> list[Library]:
         """

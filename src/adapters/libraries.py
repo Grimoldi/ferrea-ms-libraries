@@ -1,8 +1,11 @@
 from dataclasses import dataclass
-from typing import ContextManager
+from typing import Any, ContextManager
 
 import geopy
 from ferrea.clients.db import DBClient
+from ferrea.core.context import Context
+from ferrea.observability.logs import ferrea_logger
+from neo4j.spatial import Point
 
 from models.exceptions import FerreaLibraryNotCreated
 from models.library import Library
@@ -17,6 +20,25 @@ class LibrariesRepository:
     """
 
     db_client: ContextManager[DBClient]
+    context: Context
+
+    def _build_library(self, raw_library: dict[str, Any]) -> Library:
+        """Helper method to build a serialized version."""
+        try:
+            ferrea_logger.debug(
+                f"Retrieved library: {raw_library['name']}",
+                **self.context.log,
+            )
+        except KeyError as e:
+            ferrea_logger.error(e)
+            ferrea_logger.debug(f"{self.context.log}")
+            ferrea_logger.debug(f"Retrieved library: {raw_library=}")
+
+        point: Point = raw_library["location"]
+        raw_library["longitude"] = point.x
+        raw_library["latitude"] = point.y
+
+        return Library(**raw_library)
 
     def find_all_libraries(self) -> list[Library]:
         """
@@ -33,7 +55,7 @@ class LibrariesRepository:
         libraries = list()
         for library in libraries_raw:
             temp = dict(library[0].items())
-            libraries.append(Library(**temp))
+            libraries.append(self._build_library(temp))
 
         return libraries
 
@@ -57,7 +79,7 @@ class LibrariesRepository:
             return
 
         temp = dict(library_raw[0][0].items())
-        return Library(**temp)
+        return self._build_library(temp)
 
     def create_library(self, data: Library) -> Library:
         """
@@ -73,8 +95,8 @@ class LibrariesRepository:
         location = self._find_location(data.address, geolocator)
 
         query = (
-            "MERGE (l:Library {name: $name, phone: $phone, address: $address, email: $email, location: "
-            "point({latitude: $latitude, longitude: $longitude})})"
+            "MERGE (l:Library {name: $name, phone: $phone, address: $address, email: $email, "
+            "location: point({latitude: $latitude, longitude: $longitude}), fid: randomUUID()})"
         )
         params = {
             "name": data.name,
