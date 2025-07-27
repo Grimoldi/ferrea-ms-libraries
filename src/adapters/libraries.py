@@ -7,8 +7,10 @@ from ferrea.core.context import Context
 from ferrea.observability.logs import ferrea_logger
 from neo4j.spatial import Point
 
-from models.exceptions import FerreaLibraryNotCreated
+from models.exceptions import FerreaLibraryNotCreated, FerreaNonExistingLibrary
 from models.library import Library
+
+Neo4jParameter = dict[str, str | int | float]
 
 
 @dataclass
@@ -24,15 +26,10 @@ class LibrariesRepository:
 
     def _build_library(self, raw_library: dict[str, Any]) -> Library:
         """Helper method to build a serialized version."""
-        try:
-            ferrea_logger.debug(
-                f"Retrieved library: {raw_library['name']}",
-                **self.context.log,
-            )
-        except KeyError as e:
-            ferrea_logger.error(e)
-            ferrea_logger.debug(f"{self.context.log}")
-            ferrea_logger.debug(f"Retrieved library: {raw_library=}")
+        ferrea_logger.debug(
+            f"Retrieved library: {raw_library['name']}, fid {raw_library['fid']}.",
+            **self.context.log,
+        )
 
         point: Point = raw_library["location"]
         raw_library["longitude"] = point.x
@@ -59,27 +56,32 @@ class LibrariesRepository:
 
         return libraries
 
-    def find_a_library(self, name: str) -> Library | None:
+    def find_a_library_by_fid(self, fid: str) -> Library:
         """
         This method search for the desired library on the db.
 
         Args:
-            name (str): the name of the library.
+            fid (str): the ferreaID of the object.
+
+        Raises:
+            FerreaNonExistingLibrary: if library is not found and operation cannot be carried on.
 
         Returns:
-            Library | None: the library if found, else None.
+            Library: the found library.
         """
-        query = "MATCH (l:Library) WHERE l.name = $library_name RETURN l"
-        params: dict[str, str | int | float] = {"library_name": name}
+        query = "MATCH (l:Library) WHERE l.fid = $fid RETURN l"
+        params: Neo4jParameter = {"fid": fid}
 
         with self.db_client as session:
             library_raw = session.read(query, params)
 
         if len(library_raw) == 0:
-            return
+            raise FerreaNonExistingLibrary(
+                f"Unable to find library based on the provided fid {fid}"
+            )
 
-        temp = dict(library_raw[0][0].items())
-        return self._build_library(temp)
+        raw_result = dict(library_raw[0][0].items())
+        return self._build_library(raw_result)
 
     def create_library(self, data: Library) -> Library:
         """
@@ -91,27 +93,27 @@ class LibrariesRepository:
         Returns:
             Library: the created library.
         """
-        geolocator = geopy.Nominatim(user_agent="my_geo_coder")
-        location = self._find_location(data.address, geolocator)
-
-        query = (
-            "MERGE (l:Library {name: $name, phone: $phone, address: $address, email: $email, "
-            "location: point({latitude: $latitude, longitude: $longitude}), fid: randomUUID()})"
-        )
-        params = {
+        params: Neo4jParameter = {
             "name": data.name,
-            "phone": data.phone,
+            "phone": str(data.phone),
             "address": data.address,
-            "email": data.email,
+            "email": str(data.email),
         }
+        location = self._find_location(data.address)
         if location is not None:
             params["latitude"] = location.latitude
             params["longitude"] = location.longitude
 
-        with self.db_client as session:
-            session.write(query, params)
+        query = (
+            "MERGE (l:Library {name: $name, phone: $phone, address: $address, email: $email, "
+            "location: point({latitude: $latitude, longitude: $longitude}), fid: randomUUID()})"
+            "RETURN l.fid"
+        )
 
-        created_library = self.find_a_library(data.name)
+        with self.db_client as session:
+            [[new_fid]] = session.write(query, params)
+
+        created_library = self.find_a_library_by_fid(new_fid)
         if created_library is None:
             raise FerreaLibraryNotCreated(
                 f"Unable to find {data.name} library after its creation."
@@ -119,9 +121,49 @@ class LibrariesRepository:
 
         return created_library
 
-    def _find_location(
-        self, address: str, geolocator: geopy.Nominatim
-    ) -> geopy.Location | None:
-        location = geolocator.geocode(address)
+    def update_library(self, fid: str, new_value: Library) -> Library:
+        """
+        This method updates an existing library on the db, based on its fid (Ferrea ID).
+
+        Args:
+            fid (str): the ferreaID of the object.
+
+        Raises:
+            FerreaNonExistingLibrary: if library is not found and operation cannot be carried on.
+
+        Returns:
+            Library: the updated library.
+        """
+        # just check that the library exists, or raise an Error.
+        _ = self.find_a_library_by_fid(fid)
+
+        params: Neo4jParameter = {
+            "name": new_value.name,
+            "phone": str(new_value.phone),
+            "address": new_value.address,
+            "email": str(new_value.email),
+        }
+        location = self._find_location(new_value.address)
+        if location is not None:
+            params["latitude"] = location.latitude
+            params["longitude"] = location.longitude
+
+        query = (
+            "MERGE (l:Library {name: $name, phone: $phone, address: $address, email: $email, "
+            "location: point({latitude: $latitude, longitude: $longitude}), fid: randomUUID()})"
+        )
+
+        with self.db_client as session:
+            session.write(query, params)
+
+        return self.find_a_library_by_fid(fid)
+
+    @property
+    def _geolocator(self) -> geopy.Nominatim:
+        """Integrated geolocator for geopy"""
+        return geopy.Nominatim(user_agent="my_geo_coder")
+
+    def _find_location(self, address: str) -> geopy.Location | None:
+        location = self._geolocator.geocode(address)
 
         return location  # type: ignore

@@ -25,15 +25,18 @@ class RepositoryService(Protocol):
         """
         ...
 
-    def find_a_library(self, name: str) -> Library | None:
+    def find_a_library_by_fid(self, fid: str) -> Library:
         """
         This method search for the desired library on the db.
 
         Args:
-            name (str): the name of the library.
+            fid (str): the ferreaID of the object.
+
+        Raises:
+            FerreaNonExistingLibrary: if library is not found and operation cannot be carried on.
 
         Returns:
-            Library | None: the library if found, else None.
+            Library: the found library.
         """
         ...
 

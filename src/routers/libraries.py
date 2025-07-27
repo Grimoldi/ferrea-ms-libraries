@@ -12,7 +12,7 @@ from starlette.responses import JSONResponse
 from adapters.libraries import LibrariesRepository
 from models.library import Library
 from operations.libraries import (
-    get_a_library_by_name,
+    get_a_library_by_fid,
     get_all_libraries,
     upsert_a_library,
 )
@@ -83,16 +83,16 @@ class LibraryViews:
             status_code=status.HTTP_200_OK,
         )
 
-    @router.get("/libraries/{name}")
-    def search_library_by_id(self, name: str) -> JSONResponse:
-        """Endpoint for search a specific library by name."""
+    @router.get("/libraries/{fid}")
+    def search_library_by_id(self, fid: str) -> JSONResponse:
+        """Endpoint for search a specific library by its fid (ferrea id)."""
         ferrea_logger.info(
-            f"Searching {name} library.",
+            f"Searching {fid} library.",
             **self.context.log,
         )
 
         try:
-            library = get_a_library_by_name(self._repository, name=name)
+            library = get_a_library_by_fid(self._repository, fid=fid)
         except FerreaBaseException as e:
             return self._ferrea_exception_5xx(e)
         except Exception as e:
@@ -103,7 +103,7 @@ class LibraryViews:
                 uuid=self.context.uuid,
                 code="ferrea.libraries.not_found",
                 title="Not found",
-                message=f"Unable to find library with name {name}.",
+                message=f"Unable to find library with fid {fid}.",
             )
             return JSONResponse(
                 content=json.loads(error.model_dump_json()),

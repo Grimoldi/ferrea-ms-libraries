@@ -1,3 +1,4 @@
+from models.exceptions import FerreaNonExistingLibrary
 from models.library import Library
 from models.repository import RepositoryService
 
@@ -15,17 +16,20 @@ def get_all_libraries(repository: RepositoryService) -> list[Library]:
     return repository.find_all_libraries()
 
 
-def get_a_library_by_name(repository: RepositoryService, name: str) -> Library | None:
+def get_a_library_by_fid(repository: RepositoryService, fid: str) -> Library | None:
     """Search for a specific library in the repository.
 
     Args:
         repository (RepositoryService): the repository instance.
         name (str): the name of the library.
 
-    Returns:
-        Library | None: the library if found, None otherwise.
+        Returns:
+            Library: the library found or None.
     """
-    return repository.find_a_library(name)
+    try:
+        return repository.find_a_library_by_fid(fid)
+    except FerreaNonExistingLibrary as _:
+        return None
 
 
 def upsert_a_library(repository: RepositoryService, library: Library) -> Library:
