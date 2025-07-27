@@ -68,8 +68,6 @@ Libraries:
             address: Monte Amiata via, 60, Monza, MB, Italy
             phone: +39 039 731269
             email: monza.triante@brianzabiblioteche.it
-            latitude: 45.5832943
-            longitude: 9.2550648
 
     responses:
       "200":
@@ -120,8 +118,6 @@ Library:
             address: Monte Amiata via, 60, Monza, MB, Italy
             phone: "+39039731269"
             email: monza.triante@brianzabiblioteche.it
-            latitude: 45.5832943
-            longitude: 9.2550648
 
     responses:
       "200":

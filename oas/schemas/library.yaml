@@ -8,7 +8,7 @@ Library:
     fid:
       type: string
       description: Ferrea internal id
-      readOnly: true 
+      readOnly: true
     phone:
       type: string
     email:
@@ -16,6 +16,8 @@ Library:
     latitude:
       type: number
       format: float
+      readOnly: true
     longitude:
       type: number
       format: float
+      readOnly: true
