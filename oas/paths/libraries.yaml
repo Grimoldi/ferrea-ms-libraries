@@ -30,7 +30,7 @@ Libraries:
                   items: 2
                   result:
                     - name: Triante Library
-                      address: Monte Amiata via, 60, Monza, MB, Italy
+                      address: via Monte Amiata, 60, Monza, MB, Italy
                       phone: +39 039 731269
                       fid: 123456
                       email: monza.triante@brianzabiblioteche.it
@@ -65,7 +65,7 @@ Libraries:
               $ref: "../root.oas.yaml#/components/schemas/Library"
           example:
             name: Triante Library
-            address: Monte Amiata via, 60, Monza, MB, Italy
+            address: via Monte Amiata, 60, Monza, MB, Italy
             phone: +39 039 731269
             email: monza.triante@brianzabiblioteche.it
 
@@ -78,7 +78,7 @@ Libraries:
               $ref: "../root.oas.yaml#/components/schemas/Library"
             example:
               name: Triante Library
-              address: Monte Amiata via, 60, Monza, MB, Italy
+              address: via Monte Amiata, 60, Monza, MB, Italy
               phone: +39 039 731269
               fid: 123456
               email: monza.triante@brianzabiblioteche.it
@@ -93,19 +93,18 @@ Libraries:
               $ref: "../root.oas.yaml#/components/schemas/ValidationError"
 
 Library:
-  put:
-    summary: Modify a library.
+  get:
+    summary: Get a library.
     description: |
-      This endpoint allows for the updates of a new library.
-      The library should be passed in its entirety, as this will replace the existing one.
+      This endpoint allows for the search of a library.
     security: []
     tags:
       - libraries
-    operationId: updateLibrary
+    operationId: getLibrary
     parameters:
       - schema:
           type: string
-        name: id
+        name: fid
         in: path
         required: true
     requestBody:
@@ -115,7 +114,7 @@ Library:
               $ref: "../root.oas.yaml#/components/schemas/Library"
           example:
             name: Triante Library
-            address: Monte Amiata via, 60, Monza, MB, Italy
+            address: via Monte Amiata, 60, Monza, MB, Italy
             phone: "+39039731269"
             email: monza.triante@brianzabiblioteche.it
 
@@ -128,7 +127,62 @@ Library:
               $ref: "../root.oas.yaml#/components/schemas/Library"
             example:
               name: Triante Library
-              address: Monte Amiata via, 60, Monza, MB, Italy
+              address: via Monte Amiata, 60, Monza, MB, Italy
+              phone: "+39039731269"
+              fid: 123456
+              email: monza.triante@brianzabiblioteche.it
+              latitude: 45.5832943
+              longitude: 9.2550648
+
+      "404":
+        description: Not found
+        content:
+          application/problem+json:
+            schema:
+              $ref: "../root.oas.yaml#/components/schemas/FerreaError"
+            
+      "422":
+        description: Unprocessable Entity
+        content:
+          application/json:
+            schema:
+              $ref: "../root.oas.yaml#/components/schemas/ValidationError"
+  put:
+    summary: Modify a library.
+    description: |
+      This endpoint allows for the updates of a new library.
+      The library should be passed in its entirety, as this will replace the existing one.
+    security: []
+    tags:
+      - libraries
+    operationId: updateLibrary
+    parameters:
+      - schema:
+          type: string
+        name: fid
+        in: path
+        required: true
+    requestBody:
+      content:
+        application/json:
+          schema:
+              $ref: "../root.oas.yaml#/components/schemas/Library"
+          example:
+            name: Triante Library
+            address: via Monte Amiata, 60, Monza, MB, Italy
+            phone: "+39039731269"
+            email: monza.triante@brianzabiblioteche.it
+
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "../root.oas.yaml#/components/schemas/Library"
+            example:
+              name: Triante Library
+              address: via Monte Amiata, 60, Monza, MB, Italy
               phone: "+39039731269"
               fid: 123456
               email: monza.triante@brianzabiblioteche.it
@@ -159,7 +213,7 @@ Library:
     parameters:
       - schema:
           type: string
-        name: id
+        name: fid
         in: path
         required: true
 
@@ -173,48 +227,3 @@ Library:
           application/problem+json:
             schema:
               $ref: "../root.oas.yaml#/components/schemas/FerreaError"
-
-
-LibraryName:
-  get:
-    summary: Search for a single library.
-    description: This endpoint search for the specified library.
-    security: []
-    tags:
-      - libraries
-    operationId: getLibrary
-    parameters:
-      - schema:
-          type: string
-        name: name
-        in: path
-        required: true
-
-    responses:
-      "200":
-        description: OK
-        content:
-          application/json:
-            schema:
-              $ref: "../root.oas.yaml#/components/schemas/Library"
-            example:
-              name: Triante Library
-              address: Monte Amiata via, 60, Monza, MB, Italy
-              phone: +39 039 731269
-              fid: 123456
-              email: monza.triante@brianzabiblioteche.it
-              latitude: 45.5832943
-              longitude: 9.2550648
-
-      "404":
-        description: Not found
-        content:
-          application/problem+json:
-            schema:
-              $ref: "../root.oas.yaml#/components/schemas/FerreaError"
-            example:
-              uuid: 123abc456
-              code: "exception.libraries"
-              title: "Not found"
-              message: "Unable to find library"
-            

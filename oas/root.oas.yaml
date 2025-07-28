@@ -31,11 +31,8 @@ paths:
   /api/v1/libraries:
     $ref: "paths/libraries.yaml#/Libraries"
   
-  /api/v1/libraries/{id}:
+  /api/v1/libraries/{fid}:
     $ref: "paths/libraries.yaml#/Library"
-  
-  /api/v1/libraries/{name}:
-    $ref: "paths/libraries.yaml#/LibraryName"
 
   /_/health:
     $ref: "paths/probes.yaml#/Liveness"
