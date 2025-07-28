@@ -51,3 +51,33 @@ class RepositoryService(Protocol):
             Library: the created library.
         """
         ...
+
+    def update_library(self, fid: str, new_value: Library) -> Library:
+        """
+        This method updates an existing library on the db, based on its fid (Ferrea ID).
+
+        Args:
+            fid (str): the ferreaID of the object.
+
+        Raises:
+            FerreaNonExistingLibrary: if library is not found and operation cannot be carried on.
+
+        Returns:
+            Library: the updated library.
+        """
+        ...
+
+    def delete_library(self, fid: str) -> Library:
+        """
+        This method deltes an existing library from the db, based on its fid (Ferrea ID).
+
+        Args:
+            fid (str): the ferreaID of the object.
+
+        Raises:
+            FerreaNonExistingLibrary: if library is not found and operation cannot be carried on.
+
+        Returns:
+            Library: the deleted library.
+        """
+        ...
