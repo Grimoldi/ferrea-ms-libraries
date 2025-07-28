@@ -42,7 +42,7 @@ class LibraryViews:
     def _headers(self) -> dict[str, str]:
         return {FERRA_CORRELATION_HEADER: self.context.uuid}
 
-    @router.get("/libraries")
+    @router.get("/libraries", response_model=None)
     def get_all_libraries_entrypoint(self) -> JSONResponse:
         """Endpoint for listing all libraries."""
         ferrea_logger.info(
@@ -71,7 +71,7 @@ class LibraryViews:
             headers=self._headers,
         )
 
-    @router.post("/libraries")
+    @router.post("/libraries", response_model=None)
     def create_library_entrypoint(self, data: Library) -> JSONResponse:
         """Endpoint for the creation of a new library."""
         ferrea_logger.info(
@@ -92,7 +92,7 @@ class LibraryViews:
             headers=self._headers,
         )
 
-    @router.get("/libraries/{fid}")
+    @router.get("/libraries/{fid}", response_model=None)
     def search_library_entrypoint(self, fid: str) -> JSONResponse:
         """Endpoint for search a specific library by its fid (ferrea id)."""
         ferrea_logger.info(
@@ -116,7 +116,7 @@ class LibraryViews:
             headers=self._headers,
         )
 
-    @router.put("/libraries/{fid}")
+    @router.put("/libraries/{fid}", response_model=None)
     def update_library_entrypoint(self, fid: str, data: Library) -> JSONResponse:
         """Endpoint for update a specific library by its fid (ferrea id)."""
         ferrea_logger.info(
@@ -140,7 +140,7 @@ class LibraryViews:
             headers=self._headers,
         )
 
-    @router.delete("/libraries/{fid}")
+    @router.delete("/libraries/{fid}", response_model=None)
     def delete_library_entrypoint(self, fid: str) -> JSONResponse:
         """Endpoint to delete a specific library by its fid (ferrea id)."""
         ferrea_logger.info(
