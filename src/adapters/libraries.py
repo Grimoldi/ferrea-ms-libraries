@@ -76,8 +76,9 @@ class LibrariesRepository:
             library_raw = session.read(query, params)
 
         if len(library_raw) == 0:
+            ferrea_logger.warning(f"Unable to find library with fid {fid}.")
             raise FerreaNonExistingLibrary(
-                f"Unable to find library based on the provided fid {fid}"
+                f"Unable to find library based on the provided fid {fid}."
             )
 
         raw_result = dict(library_raw[0][0].items())
@@ -150,13 +151,39 @@ class LibrariesRepository:
 
         query = (
             "MERGE (l:Library {name: $name, phone: $phone, address: $address, email: $email, "
-            "location: point({latitude: $latitude, longitude: $longitude}), fid: randomUUID()})"
+            "location: point({latitude: $latitude, longitude: $longitude})})"
         )
 
         with self.db_client as session:
             session.write(query, params)
 
         return self.find_a_library_by_fid(fid)
+
+    def delete_library(self, fid: str) -> Library:
+        """
+        This method deltes an existing library from the db, based on its fid (Ferrea ID).
+
+        Args:
+            fid (str): the ferreaID of the object.
+
+        Raises:
+            FerreaNonExistingLibrary: if library is not found and operation cannot be carried on.
+
+        Returns:
+            Library: the deleted library.
+        """
+        # just check that the library exists, or raise an Error.
+        old_library = self.find_a_library_by_fid(fid)
+
+        params: Neo4jParameter = {
+            "fid": fid,
+        }
+        query = "MATCH (l:Library fid: $fid}) DELETE l"
+
+        with self.db_client as session:
+            session.write(query, params)
+
+        return old_library
 
     @property
     def _geolocator(self) -> geopy.Nominatim:
