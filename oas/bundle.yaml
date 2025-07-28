@@ -53,16 +53,16 @@ paths:
                     items: 2
                     result:
                       - name: Triante Library
-                        address: Monte Amiata Street, 60, Monza, MB, Italy
+                        address: via Monte Amiata, 60, Monza, MB, Italy
                         phone: +39 039 731269
-                        fid: 123456
+                        fid: 35df53b9-93a4-4662-97e6-3118223f59d6
                         email: monza.triante@brianzabiblioteche.it
                         latitude: 45.5832943
                         longitude: 9.2550648
                       - name: Monza Civica
-                        address: Padre Reginaldo Giuliani Street, 1, Monza, MB, Italy
+                        address: Padre Reginaldo Giuliani via, 1, Monza, MB, Italy
                         phone: +39 039 382272
-                        fid: 123456
+                        fid: 35df53b9-93a4-4662-97e6-3118223f59d6
                         email: monza.civica@brianzabiblioteche.it
                         latitude: 45.5838734
                         longitude: 9.2724811
@@ -71,6 +71,13 @@ paths:
                   value:
                     items: 0
                     result: []
+          headers:
+            ferrea-correlation-id:
+              schema:
+                type: string
+                format: uuid
+                example: 35df53b9-93a4-4662-97e6-3118223f59d6
+              description: The correlation id of the request.
     post:
       summary: Create a new library.
       description: |
@@ -87,11 +94,9 @@ paths:
               $ref: '#/components/schemas/Library'
             example:
               name: Triante Library
-              address: Monte Amiata Street, 60, Monza, MB, Italy
+              address: via Monte Amiata, 60, Monza, MB, Italy
               phone: +39 039 731269
               email: monza.triante@brianzabiblioteche.it
-              latitude: 45.5832943
-              longitude: 9.2550648
       responses:
         '200':
           description: OK
@@ -101,19 +106,91 @@ paths:
                 $ref: '#/components/schemas/Library'
               example:
                 name: Triante Library
-                address: Monte Amiata Street, 60, Monza, MB, Italy
+                address: via Monte Amiata, 60, Monza, MB, Italy
                 phone: +39 039 731269
-                fid: 123456
+                fid: 35df53b9-93a4-4662-97e6-3118223f59d6
                 email: monza.triante@brianzabiblioteche.it
                 latitude: 45.5832943
                 longitude: 9.2550648
+          headers:
+            ferrea-correlation-id:
+              schema:
+                type: string
+                format: uuid
+                example: 35df53b9-93a4-4662-97e6-3118223f59d6
+              description: The correlation id of the request.
         '422':
           description: Unprocessable Entity
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
-  /api/v1/libraries/{id}:
+  /api/v1/libraries/{fid}:
+    get:
+      summary: Get a library.
+      description: |
+        This endpoint allows for the search of a library.
+      security: []
+      tags:
+        - libraries
+      operationId: getLibrary
+      parameters:
+        - schema:
+            type: string
+          name: fid
+          in: path
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Library'
+            example:
+              name: Triante Library
+              address: via Monte Amiata, 60, Monza, MB, Italy
+              phone: '+39039731269'
+              email: monza.triante@brianzabiblioteche.it
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Library'
+              example:
+                name: Triante Library
+                address: via Monte Amiata, 60, Monza, MB, Italy
+                phone: '+39039731269'
+                fid: 35df53b9-93a4-4662-97e6-3118223f59d6
+                email: monza.triante@brianzabiblioteche.it
+                latitude: 45.5832943
+                longitude: 9.2550648
+          headers:
+            ferrea-correlation-id:
+              schema:
+                type: string
+                format: uuid
+                example: 35df53b9-93a4-4662-97e6-3118223f59d6
+              description: The correlation id of the request.
+        '404':
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/FerreaError'
+          headers:
+            ferrea-correlation-id:
+              schema:
+                type: string
+                format: uuid
+                example: 35df53b9-93a4-4662-97e6-3118223f59d6
+              description: The correlation id of the request.
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
     put:
       summary: Modify a library.
       description: |
@@ -126,7 +203,7 @@ paths:
       parameters:
         - schema:
             type: string
-          name: id
+          name: fid
           in: path
           required: true
       requestBody:
@@ -136,11 +213,9 @@ paths:
               $ref: '#/components/schemas/Library'
             example:
               name: Triante Library
-              address: Monte Amiata Street, 60, Monza, MB, Italy
+              address: via Monte Amiata, 60, Monza, MB, Italy
               phone: '+39039731269'
               email: monza.triante@brianzabiblioteche.it
-              latitude: 45.5832943
-              longitude: 9.2550648
       responses:
         '200':
           description: OK
@@ -150,18 +225,32 @@ paths:
                 $ref: '#/components/schemas/Library'
               example:
                 name: Triante Library
-                address: Monte Amiata Street, 60, Monza, MB, Italy
+                address: via Monte Amiata, 60, Monza, MB, Italy
                 phone: '+39039731269'
-                fid: 123456
+                fid: 35df53b9-93a4-4662-97e6-3118223f59d6
                 email: monza.triante@brianzabiblioteche.it
                 latitude: 45.5832943
                 longitude: 9.2550648
+          headers:
+            ferrea-correlation-id:
+              schema:
+                type: string
+                format: uuid
+                example: 35df53b9-93a4-4662-97e6-3118223f59d6
+              description: The correlation id of the request.
         '404':
           description: Not found
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/FerreaError'
+          headers:
+            ferrea-correlation-id:
+              schema:
+                type: string
+                format: uuid
+                example: 35df53b9-93a4-4662-97e6-3118223f59d6
+              description: The correlation id of the request.
         '422':
           description: Unprocessable Entity
           content:
@@ -179,58 +268,32 @@ paths:
       parameters:
         - schema:
             type: string
-          name: id
+          name: fid
           in: path
           required: true
       responses:
         '204':
           description: No content
+          headers:
+            ferrea-correlation-id:
+              schema:
+                type: string
+                format: uuid
+                example: 35df53b9-93a4-4662-97e6-3118223f59d6
+              description: The correlation id of the request.
         '404':
           description: Not found
           content:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/FerreaError'
-  /api/v1/libraries/{name}:
-    get:
-      summary: Search for a single library.
-      description: This endpoint search for the specified library.
-      security: []
-      tags:
-        - libraries
-      operationId: getLibrary
-      parameters:
-        - schema:
-            type: string
-          name: name
-          in: path
-          required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
+          headers:
+            ferrea-correlation-id:
               schema:
-                $ref: '#/components/schemas/Library'
-              example:
-                name: Triante Library
-                address: Monte Amiata Street, 60, Monza, MB, Italy
-                phone: +39 039 731269
-                fid: 123456
-                email: monza.triante@brianzabiblioteche.it
-                latitude: 45.5832943
-                longitude: 9.2550648
-        '404':
-          description: Not found
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/FerreaError'
-              example:
-                uuid: 123abc456
-                code: exception.libraries
-                title: Not found
-                message: Unable to find library
+                type: string
+                format: uuid
+                example: 35df53b9-93a4-4662-97e6-3118223f59d6
+              description: The correlation id of the request.
   /_/health:
     get:
       description: Verify the webserver's dependencies health.
@@ -312,9 +375,11 @@ components:
         latitude:
           type: number
           format: float
+          readOnly: true
         longitude:
           type: number
           format: float
+          readOnly: true
     Probe:
       type: object
       required:
@@ -352,8 +417,6 @@ components:
           type: string
         message:
           type: string
-      required:
-        - detail
       additionalProperties: false
     ValidationError:
       type: object

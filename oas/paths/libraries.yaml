@@ -32,14 +32,14 @@ Libraries:
                     - name: Triante Library
                       address: via Monte Amiata, 60, Monza, MB, Italy
                       phone: +39 039 731269
-                      fid: 123456
+                      fid: 35df53b9-93a4-4662-97e6-3118223f59d6
                       email: monza.triante@brianzabiblioteche.it
                       latitude: 45.5832943
                       longitude: 9.2550648
                     - name: Monza Civica
                       address: Padre Reginaldo Giuliani via, 1, Monza, MB, Italy
                       phone: +39 039 382272
-                      fid: 123456
+                      fid: 35df53b9-93a4-4662-97e6-3118223f59d6
                       email: monza.civica@brianzabiblioteche.it
                       latitude: 45.5838734
                       longitude: 9.2724811
@@ -53,6 +53,7 @@ Libraries:
               schema:
                 type: string
                 format: uuid
+                example: 35df53b9-93a4-4662-97e6-3118223f59d6
               description: The correlation id of the request.
 
   post:
@@ -86,7 +87,7 @@ Libraries:
               name: Triante Library
               address: via Monte Amiata, 60, Monza, MB, Italy
               phone: +39 039 731269
-              fid: 123456
+              fid: 35df53b9-93a4-4662-97e6-3118223f59d6
               email: monza.triante@brianzabiblioteche.it
               latitude: 45.5832943
               longitude: 9.2550648
@@ -95,6 +96,7 @@ Libraries:
               schema:
                 type: string
                 format: uuid
+                example: 35df53b9-93a4-4662-97e6-3118223f59d6
               description: The correlation id of the request.
             
       "422":
@@ -141,7 +143,7 @@ Library:
               name: Triante Library
               address: via Monte Amiata, 60, Monza, MB, Italy
               phone: "+39039731269"
-              fid: 123456
+              fid: 35df53b9-93a4-4662-97e6-3118223f59d6
               email: monza.triante@brianzabiblioteche.it
               latitude: 45.5832943
               longitude: 9.2550648
@@ -150,6 +152,7 @@ Library:
               schema:
                 type: string
                 format: uuid
+                example: 35df53b9-93a4-4662-97e6-3118223f59d6
               description: The correlation id of the request.
 
       "404":
@@ -163,6 +166,7 @@ Library:
               schema:
                 type: string
                 format: uuid
+                example: 35df53b9-93a4-4662-97e6-3118223f59d6
               description: The correlation id of the request.
             
       "422":
@@ -208,7 +212,7 @@ Library:
               name: Triante Library
               address: via Monte Amiata, 60, Monza, MB, Italy
               phone: "+39039731269"
-              fid: 123456
+              fid: 35df53b9-93a4-4662-97e6-3118223f59d6
               email: monza.triante@brianzabiblioteche.it
               latitude: 45.5832943
               longitude: 9.2550648
@@ -217,6 +221,7 @@ Library:
               schema:
                 type: string
                 format: uuid
+                example: 35df53b9-93a4-4662-97e6-3118223f59d6
               description: The correlation id of the request.
 
       "404":
@@ -230,6 +235,7 @@ Library:
               schema:
                 type: string
                 format: uuid
+                example: 35df53b9-93a4-4662-97e6-3118223f59d6
               description: The correlation id of the request.
             
       "422":
@@ -261,6 +267,7 @@ Library:
               schema:
                 type: string
                 format: uuid
+                example: 35df53b9-93a4-4662-97e6-3118223f59d6
               description: The correlation id of the request.
 
       "404":
@@ -274,4 +281,5 @@ Library:
               schema:
                 type: string
                 format: uuid
+                example: 35df53b9-93a4-4662-97e6-3118223f59d6
               description: The correlation id of the request.

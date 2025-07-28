@@ -9,6 +9,4 @@ FerreaError:
       type: string
     message:
       type: string
-  required:
-    - detail
   additionalProperties: false
