@@ -1,5 +1,3 @@
-from ferrea.observability.logs import ferrea_logger
-
 from models.exceptions import FerreaNonExistingLibrary
 from models.library import Library
 from models.repository import RepositoryService
@@ -61,7 +59,6 @@ def update_library(
     Returns:
         Library | None: the updatedlibrary or None if not found.
     """
-    ferrea_logger.info(f"Start updating library with fid {fid}.")
     try:
         return repository.update_library(fid, new_library)
     except FerreaNonExistingLibrary as _:

@@ -9,3 +9,5 @@ class FerreaLibraryNotCreated(FerreaBaseException):
 
 class FerreaNonExistingLibrary(FerreaBaseException):
     """Operation on the library cannot be performed due to non existing library."""
+
+    pass
