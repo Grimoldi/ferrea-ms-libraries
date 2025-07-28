@@ -48,6 +48,12 @@ Libraries:
                 value:
                   items: 0
                   result: []
+        headers:
+          ferrea-correlation-id:
+              schema:
+                type: string
+                format: uuid
+              description: The correlation id of the request.
 
   post:
     summary: Create a new library.
@@ -84,6 +90,12 @@ Libraries:
               email: monza.triante@brianzabiblioteche.it
               latitude: 45.5832943
               longitude: 9.2550648
+        headers:
+          ferrea-correlation-id:
+              schema:
+                type: string
+                format: uuid
+              description: The correlation id of the request.
             
       "422":
         description: Unprocessable Entity
@@ -133,6 +145,12 @@ Library:
               email: monza.triante@brianzabiblioteche.it
               latitude: 45.5832943
               longitude: 9.2550648
+        headers:
+          ferrea-correlation-id:
+              schema:
+                type: string
+                format: uuid
+              description: The correlation id of the request.
 
       "404":
         description: Not found
@@ -140,6 +158,12 @@ Library:
           application/problem+json:
             schema:
               $ref: "../root.oas.yaml#/components/schemas/FerreaError"
+        headers:
+          ferrea-correlation-id:
+              schema:
+                type: string
+                format: uuid
+              description: The correlation id of the request.
             
       "422":
         description: Unprocessable Entity
@@ -188,6 +212,12 @@ Library:
               email: monza.triante@brianzabiblioteche.it
               latitude: 45.5832943
               longitude: 9.2550648
+        headers:
+          ferrea-correlation-id:
+              schema:
+                type: string
+                format: uuid
+              description: The correlation id of the request.
 
       "404":
         description: Not found
@@ -195,6 +225,12 @@ Library:
           application/problem+json:
             schema:
               $ref: "../root.oas.yaml#/components/schemas/FerreaError"
+        headers:
+          ferrea-correlation-id:
+              schema:
+                type: string
+                format: uuid
+              description: The correlation id of the request.
             
       "422":
         description: Unprocessable Entity
@@ -220,6 +256,12 @@ Library:
     responses:
       "204":
         description: No content
+        headers:
+          ferrea-correlation-id:
+              schema:
+                type: string
+                format: uuid
+              description: The correlation id of the request.
 
       "404":
         description: Not found
@@ -227,3 +269,9 @@ Library:
           application/problem+json:
             schema:
               $ref: "../root.oas.yaml#/components/schemas/FerreaError"
+        headers:
+          ferrea-correlation-id:
+              schema:
+                type: string
+                format: uuid
+              description: The correlation id of the request.
