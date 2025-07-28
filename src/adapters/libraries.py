@@ -178,7 +178,7 @@ class LibrariesRepository:
         params: Neo4jParameter = {
             "fid": fid,
         }
-        query = "MATCH (l:Library fid: $fid}) DELETE l"
+        query = "MATCH (l:Library {fid: $fid}) DELETE l"
 
         with self.db_client as session:
             session.write(query, params)
