@@ -9,7 +9,7 @@ from starlette.responses import JSONResponse
 from models.probes import HealthStatus
 from operations.probes import check_health, check_readiness
 
-from ._builder import build_db_connection
+from ._builder import _build_db_connection
 
 router = APIRouter()
 
@@ -44,7 +44,7 @@ async def readiness() -> JSONResponse:
 
 @router.get("/_/health", response_model=None)
 async def liveness(
-    db_client: Annotated[DBClient, Depends(build_db_connection)],
+    db_client: Annotated[DBClient, Depends(_build_db_connection)],
 ) -> JSONResponse:
     """This function serves as readiness probe.
 

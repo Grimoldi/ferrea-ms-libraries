@@ -1,12 +1,16 @@
-from fastapi import Request
+from typing import Annotated
+
+from fastapi import Depends, Request
 from ferrea.clients.db import ConnectionSettings, DBClient, Neo4jClient
 from ferrea.core.context import Context
 from ferrea.core.header import FERRA_CORRELATION_HEADER, get_correlation_id
 
+from adapters.libraries import LibrariesRepository
 from configs.config import settings
+from models.repository import RepositoryService
 
 
-def build_db_connection() -> DBClient:
+def _build_db_connection() -> DBClient:
     """
     This function just returns the instance of the db object.
     Needed a funcion for the "Depends" on fastapi.
@@ -43,4 +47,21 @@ async def build_context(request: Request) -> Context:
     """
     ferrea_correlation_id = request.headers.get(FERRA_CORRELATION_HEADER)
     correlation_id = await get_correlation_id(ferrea_correlation_id)
+
     return Context(str(correlation_id), settings.ferrea_app.name)
+
+
+async def build_repository(
+    context: Annotated[Context, Depends(build_context)],
+    db_client: Annotated[DBClient, Depends(_build_db_connection)],
+) -> RepositoryService:
+    """Build the repository object from the context and the db client.
+
+    Args:
+        context (Annotated[Context, Depends): the context of the request.
+        db_client (Annotated[DBClient, Depends): the client to interact with the database.
+
+    Returns:
+        RepositoryService: the implementation of the repository.
+    """
+    return LibrariesRepository(db_client=db_client, context=context)

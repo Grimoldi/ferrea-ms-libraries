@@ -2,7 +2,6 @@ import json
 
 from fastapi import APIRouter, Depends, status
 from fastapi_utils.cbv import cbv
-from ferrea.clients.db import DBClient
 from ferrea.core.context import Context
 from ferrea.core.exceptions import FerreaBaseException
 from ferrea.core.header import FERRA_CORRELATION_HEADER
@@ -10,8 +9,8 @@ from ferrea.models.error import FerreaError
 from ferrea.observability.logs import ferrea_logger
 from starlette.responses import JSONResponse
 
-from adapters.libraries import LibrariesRepository
 from models.library import Library
+from models.repository import RepositoryService
 from operations.libraries import (
     delete_library,
     get_all_libraries,
@@ -20,7 +19,7 @@ from operations.libraries import (
     upsert_library,
 )
 
-from ._builder import build_context, build_db_connection
+from ._builder import build_context, build_repository
 
 router = APIRouter(prefix="/api/v1")
 
@@ -31,12 +30,8 @@ class LibraryViews:
     This class holds the endpoints for the app.
     """
 
-    db_client: DBClient = Depends(build_db_connection)
     context: Context = Depends(build_context)
-
-    @property
-    def _repository(self) -> LibrariesRepository:
-        return LibrariesRepository(self.db_client, self.context)
+    _repository: RepositoryService = Depends(build_repository)
 
     @property
     def _headers(self) -> dict[str, str]:
