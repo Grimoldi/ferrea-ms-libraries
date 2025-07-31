@@ -44,7 +44,9 @@ class LibrariesRepository:
         Returns:
             list[Library]: the list of all Libraries.
         """
-        query = "MATCH (l:Library) return l"
+        query = """//cypher
+            MATCH (l:Library) return l
+        """
 
         with self.db_client as session:
             libraries_raw = session.read(query=query)
@@ -69,7 +71,9 @@ class LibrariesRepository:
         Returns:
             Library: the found library.
         """
-        query = "MATCH (l:Library) WHERE l.fid = $fid RETURN l"
+        query = """//cypher
+            MATCH (l:Library) WHERE l.fid = $fid RETURN l
+        """
         params: Neo4jParameter = {"fid": fid}
 
         with self.db_client as session:
@@ -105,11 +109,11 @@ class LibrariesRepository:
             params["latitude"] = location.latitude
             params["longitude"] = location.longitude
 
-        query = (
-            "MERGE (l:Library {name: $name, phone: $phone, address: $address, email: $email, "
-            "location: point({latitude: $latitude, longitude: $longitude}), fid: randomUUID()})"
-            "RETURN l.fid"
-        )
+        query = """//cypher
+            MERGE (l:Library {name: $name, phone: $phone, address: $address, email: $email, 
+            location: point({latitude: $latitude, longitude: $longitude}), fid: randomUUID()})
+            RETURN l.fid
+        """
 
         with self.db_client as session:
             [[new_fid]] = session.write(query, params)
@@ -149,10 +153,10 @@ class LibrariesRepository:
             params["latitude"] = location.latitude
             params["longitude"] = location.longitude
 
-        query = (
-            "MERGE (l:Library {name: $name, phone: $phone, address: $address, email: $email, "
-            "location: point({latitude: $latitude, longitude: $longitude})})"
-        )
+        query = """//cypher
+            MERGE (l:Library {name: $name, phone: $phone, address: $address, email: $email,
+            location: point({latitude: $latitude, longitude: $longitude})})
+        """
 
         with self.db_client as session:
             session.write(query, params)
@@ -178,7 +182,9 @@ class LibrariesRepository:
         params: Neo4jParameter = {
             "fid": fid,
         }
-        query = "MATCH (l:Library {fid: $fid}) DELETE l"
+        query = """//cypher
+            MATCH (l:Library {fid: $fid}) DELETE l
+        """
 
         with self.db_client as session:
             session.write(query, params)
